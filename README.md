@@ -44,3 +44,9 @@ or
 ```
 python medgemma.py
 ```
+
+- Run agent
+
+```
+python agent.py
+```
