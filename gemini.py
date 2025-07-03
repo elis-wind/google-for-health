@@ -11,7 +11,7 @@ GEMINI_MODEL = "gemini-2.5-flash"
 SYSTEM = "You are a helpful medical assistant."
 PROMPT = "How do you differentiate bacterial from viral pneumonia?"
 
-def call_gemini():
+def call_gemini(prompt: str = f"{SYSTEM} {PROMPT}"):
     client = genai.Client(
         vertexai=True,
         project=os.getenv("GOOGLE_CLOUD_PROJECT"),
@@ -22,7 +22,7 @@ def call_gemini():
         types.Content(
         role="user",
         parts=[
-            types.Part.from_text(text=PROMPT)
+            types.Part.from_text(text=prompt)
         ]
         )
     ]
@@ -50,13 +50,18 @@ def call_gemini():
         ),
     )
 
+    full_response = ""
     for chunk in client.models.generate_content_stream(
-        model = GEMINI_MODEL,
-        contents = contents,
-        config = generate_content_config,
-        ):
-        print(chunk.text, end="")
+        model=GEMINI_MODEL,
+        contents=contents,
+        config=generate_content_config,
+    ):
+        if chunk.text:
+            full_response += chunk.text
+
+    return full_response.strip()
 
 
 if __name__ == "__main__":
-    call_gemini()
+    response = call_gemini()
+    print(response)

@@ -1,3 +1,5 @@
 google-cloud-aiplatform>=1.31.0
 python-dotenv>=1.0.0
 google-genai>=0.7.0
+langgraph>=0.3.1
+langchain-google-genai>=2.0.0
