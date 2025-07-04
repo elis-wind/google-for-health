@@ -11,7 +11,11 @@ GEMINI_MODEL = "gemini-2.5-flash"
 SYSTEM = "You are a helpful medical assistant."
 PROMPT = "How do you differentiate bacterial from viral pneumonia?"
 
-def call_gemini(prompt: str = f"{SYSTEM} {PROMPT}"):
+def call_gemini(
+    prompt: str = f"{SYSTEM} {PROMPT}",
+    max_tokens: int = 4096,
+    temperature: float = 0.0
+    ):
     client = genai.Client(
         vertexai=True,
         project=os.getenv("GOOGLE_CLOUD_PROJECT"),
@@ -27,11 +31,9 @@ def call_gemini(prompt: str = f"{SYSTEM} {PROMPT}"):
         )
     ]
 
-    generate_content_config = types.GenerateContentConfig(
-        temperature = 0,
-        top_p = 1,
-        seed = 0,
-        max_output_tokens = 65535,
+    gemini_config = types.GenerateContentConfig(
+        temperature=temperature,
+        max_output_tokens=max_tokens,
         safety_settings = [types.SafetySetting(
             category="HARM_CATEGORY_HATE_SPEECH",
             threshold="OFF"
@@ -54,7 +56,7 @@ def call_gemini(prompt: str = f"{SYSTEM} {PROMPT}"):
     for chunk in client.models.generate_content_stream(
         model=GEMINI_MODEL,
         contents=contents,
-        config=generate_content_config,
+        config=gemini_config,
     ):
         if chunk.text:
             full_response += chunk.text

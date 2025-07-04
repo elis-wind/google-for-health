@@ -8,6 +8,7 @@ from langgraph.graph.message import add_messages
 from langchain_core.messages import HumanMessage, AIMessage
 
 from gemini import call_gemini
+from medgemma import call_medgemma
 
 load_dotenv()
 
@@ -20,13 +21,13 @@ class SessionState(TypedDict):
 
 PHASE_PROMPTS = {
     "summary": """
-    You are a clinical tutor.\nGiven the checklist, ask the student to summarize the findings.\n
+    You are a clinical tutor.\nGiven the checklist, ask the student to summarize the findings. Do not provide summary by yourself\n
     Checklist: {checklist}
     """,
 
     "diff": """
     You are guiding differential diagnosis. Ask student to provide you with 3-5 possible diagnosis 
-    and the reasoning behind them.
+    and the reasoning behind them. Do not give the examples, do not provide diagnosis by yourself, do not provide student's response.
     Student reasoning so far: {last}
     """,
 
@@ -67,7 +68,10 @@ def make_phase_node(phase_name: str) -> Callable[[SessionState], SessionState]:
             checklist=json.dumps(state["checklist"], indent=2),
             last=last
         )
-        tutor_msg = call_gemini(prompt=prompt)
+        # Call Gemini
+        tutor_msg = call_gemini(prompt=prompt, max_tokens=2048, temperature=0)
+        # Call MedGemma
+        # tutor_msg = call_medgemma(prompt=prompt, max_tokens=2048, temperature=0)
         print(f"\n🤖 AI tutor ({phase_name}): {tutor_msg}\n")
 
         # Skip student input for the final feedback phase
@@ -103,7 +107,10 @@ def generate_report(state: SessionState) -> dict:
     """
     prompt = "Generate a final session report including the initial checklist and the summary of student's reasoning, with strengths and weaknesses"
     msg = json.dumps([m.content for m in state["history"]], indent=2) + prompt
+    # Call Gemini
     response = call_gemini(prompt=msg)
+    # Call MedGemma
+    # response = call_medgemma(prompt=msg)
     return {
         "report": response
     }
@@ -114,7 +121,10 @@ def generate_virtual_patient_persona(state: SessionState) -> dict:
     """
     prompt = "Generate a virtual patient persona similar to the student's checklist. This persona should target student's weaknesses in medical reasoning"
     msg = json.dumps([m.content for m in state["history"]], indent=2) + prompt
+    # Call Gemini
     response = call_gemini(prompt=msg)
+    # Call MedGemma
+    # response = call_medgemma(prompt=msg)
     return {
         "virtual_patient": response
     }
@@ -150,5 +160,5 @@ if __name__ == "__main__":
     }
     print("Checklist:\n", json.dumps(init_state["checklist"], indent=2))
     result = app.invoke(init_state)
-    print(f"\nReport:\n", result["report"])
-    print(f"\nVirtual patient:\n", result["virtual_patient"])
+    print("\nReport:\n", result["report"])
+    print("\nVirtual patient:\n", result["virtual_patient"])

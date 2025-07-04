@@ -17,12 +17,16 @@ endpoint = aiplatform.Endpoint(
     location=os.getenv("GOOGLE_CLOUD_LOCATION"),
 )
 
-def call_medgemma(prompt: str = f"{SYSTEM} {PROMPT}"):
+def call_medgemma(
+    prompt: str = f"{SYSTEM} {PROMPT}",
+    max_tokens: int = 4096,
+    temperature: float = 0.0
+    ):
     instances = [
         {
             "prompt": prompt,
-            "max_tokens": 1048,
-            "temperature": 0,
+            "max_tokens": max_tokens,
+            "temperature": temperature,
             "raw_response": True,
         },
     ]
@@ -33,7 +37,7 @@ def call_medgemma(prompt: str = f"{SYSTEM} {PROMPT}"):
     )
     prediction = response.predictions[0]
     
-    return prediction
+    return prediction.strip()
 
 
 if __name__ == "__main__":
