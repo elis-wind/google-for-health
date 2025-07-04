@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
@@ -14,8 +15,17 @@ PROMPT = "How do you differentiate bacterial from viral pneumonia?"
 def call_gemini(
     prompt: str = f"{SYSTEM} {PROMPT}",
     max_tokens: int = 4096,
-    temperature: float = 0.0
+    temperature: float = 0.0,
+    system_prompt: Optional[str] = None
     ):
+    # Use custom system prompt if provided, otherwise use default
+    if system_prompt:
+        effective_system = system_prompt
+    else:
+        effective_system = SYSTEM
+    
+    # Combine system prompt with user prompt
+    full_prompt = f"{effective_system}\n\n{prompt}"
     client = genai.Client(
         vertexai=True,
         project=os.getenv("GOOGLE_CLOUD_PROJECT"),
@@ -26,7 +36,7 @@ def call_gemini(
         types.Content(
         role="user",
         parts=[
-            types.Part.from_text(text=prompt)
+            types.Part.from_text(text=full_prompt)
         ]
         )
     ]

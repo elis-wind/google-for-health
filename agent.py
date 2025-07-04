@@ -1,7 +1,7 @@
 import json
 from cmath import phase
 from dotenv import load_dotenv
-from typing import Callable
+from typing import Callable, Optional
 from typing_extensions import TypedDict, Literal, Annotated
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
@@ -161,7 +161,7 @@ def _ensure_message_objects(history):
             new_history.append(msg)
     return new_history
 
-def step_agent(state: SessionState, user_message: str = None) -> dict:
+def step_agent(state: SessionState, user_message: Optional[str] = None, system_prompt: Optional[str] = None) -> dict:
     """
     Advances the agent by one phase using the provided user message.
     Returns the updated state and the AI's next message.
@@ -179,7 +179,7 @@ def step_agent(state: SessionState, user_message: str = None) -> dict:
         last=last
     )
     # Call Gemini
-    tutor_msg = call_gemini(prompt=prompt, max_tokens=2048, temperature=0)
+    tutor_msg = call_gemini(prompt=prompt, max_tokens=2048, temperature=0, system_prompt=system_prompt)
     # Update history with tutor message
     state["history"].append(HumanMessage(content=prompt))
     state["history"].append(AIMessage(content=tutor_msg))
