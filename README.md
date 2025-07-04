@@ -23,7 +23,7 @@ source venv/bin/activate
 
 ```
 pip install -r requirements.txt
-````
+```
 
 - Create a .env file in the project root with
 
@@ -33,7 +33,7 @@ GOOGLE_CLOUD_LOCATION=your-region
 MEDGEMMA_ENDPOINT_ID=your-medgemma-endpoint-id
 ```
 
-- Run models
+## Backend tests (models + agent)
 
 ```
 python gemini.py
@@ -50,3 +50,32 @@ python medgemma.py
 ```
 python agent.py
 ```
+
+## Frontend (React + Vite + TypeScript)
+
+- Setup and run:
+
+```
+cd front
+npm install
+npm run dev
+```
+
+- Open http://localhost:5173 in your browser.
+
+## Fullstack: Run backend and frontend together
+
+- In one terminal, start the backend:
+
+```
+python server.py
+```
+
+- In another terminal, start the frontend:
+
+```
+cd front
+npm run dev
+```
+
+- The frontend will be at http://localhost:5173 and will connect to the backend at http://localhost:8000.

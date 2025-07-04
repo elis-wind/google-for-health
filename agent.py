@@ -145,6 +145,60 @@ builder.add_edge("virtual_patient", END)
 
 app = builder.compile()
 
+def _ensure_message_objects(history):
+    new_history = []
+    for msg in history:
+        if isinstance(msg, dict):
+            # Try to infer type
+            if msg.get("type") == "human" or msg.get("role") == "user":
+                new_history.append(HumanMessage(content=msg["content"]))
+            elif msg.get("type") == "ai" or msg.get("role") == "ai":
+                new_history.append(AIMessage(content=msg["content"]))
+            else:
+                # Fallback: treat as human
+                new_history.append(HumanMessage(content=msg.get("content", "")))
+        else:
+            new_history.append(msg)
+    return new_history
+
+def step_agent(state: SessionState, user_message: str = None) -> dict:
+    """
+    Advances the agent by one phase using the provided user message.
+    Returns the updated state and the AI's next message.
+    """
+    # Ensure history is a list of message objects
+    state["history"] = _ensure_message_objects(state.get("history", []))
+    # Allowed phases
+    phase_order = ["summary", "diff", "lead", "alts", "errors", "plan", "final_feedback", "outputs"]
+    # Determine current phase
+    phase = state["phase"]
+    # Prepare prompt for the current phase
+    last = state["history"][-1].content if state["history"] else ""
+    prompt = PHASE_PROMPTS[phase].format(
+        checklist=json.dumps(state["checklist"], indent=2),
+        last=last
+    )
+    # Call Gemini
+    tutor_msg = call_gemini(prompt=prompt, max_tokens=2048, temperature=0)
+    # Update history with tutor message
+    state["history"].append(HumanMessage(content=prompt))
+    state["history"].append(AIMessage(content=tutor_msg))
+    # If not final_feedback, add user message if provided
+    if phase != "final_feedback" and user_message is not None:
+        state["history"].append(HumanMessage(content=user_message))
+    # Advance phase
+    next_phase_idx = phase_order.index(phase) + 1 if phase in phase_order else len(phase_order) - 1
+    next_phase = phase_order[next_phase_idx] if next_phase_idx < len(phase_order) else phase_order[-1]
+    state["phase"] = next_phase  # Always a valid literal
+    # Ensure all required fields are present
+    if "checklist" not in state:
+        state["checklist"] = {}
+    if "report" not in state:
+        state["report"] = ""
+    if "virtual_patient" not in state:
+        state["virtual_patient"] = ""
+    return {"state": state, "ai_message": tutor_msg}
+
 if __name__ == "__main__":
     init_state: SessionState = {
         "checklist": {
