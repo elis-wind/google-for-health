@@ -44,14 +44,14 @@ function App() {
     setMessages((msgs) => [...msgs, { role: "user", content: userMsg }]);
     setInput("");
     setLoading(true);
-    
+
     try {
       // Use the simple chat endpoint for clean conversations
-      const res = await fetch("http://localhost:8000/chat/simple", {
+      const res = await fetch("http://localhost:8000/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          message: userMsg, 
+        body: JSON.stringify({
+          message: userMsg,
           state: sessionState,
           system_prompt: systemPrompt
         }),
