@@ -55,13 +55,11 @@ RESPONSE STYLE:
 When given clinical examination findings, interpret them from a patient's perspective and respond as this patient would.
 
 PATIENT CONDITION
-Digestive :
-- Intestinal sounds
-- Transit
-
-Nephrological and urinary :
-- Diuresis
-- Edema`);
+Pulmonary:
+- Shortness of breath
+- For a long time
+- Cough
+- Even more difficulty breathing when lying down`);
   const [initialMessage, setInitialMessage] = useState("Hi, What brings you here today?");
   const inputRef = useRef<HTMLInputElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
