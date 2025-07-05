@@ -3,6 +3,15 @@ import type { FormEvent } from "react";
 import { marked } from "marked";
 import { Link } from "react-router-dom";
 
+// Extend React types to include custom element
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'vapi-widget': any;
+    }
+  }
+}
+
 // Initial session state for the agent - now empty by default
 const initialState = {
   checklist: {},
@@ -25,10 +34,53 @@ function App() {
   const [sessionState, setSessionState] = useState<any>(initialState);
   const [loading, setLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [systemPrompt, setSystemPrompt] = useState("You are a helpful medical assistant.");
-  const [initialMessage, setInitialMessage] = useState("Please help me start my medical case analysis.");
+  const [systemPrompt, setSystemPrompt] = useState(`You are roleplaying as a patient for medical education purposes. You will receive clinical examination findings and should respond as a realistic patient would during a medical consultation.
+
+ROLE GUIDELINES:
+- You are a patient being examined by a medical student or doctor
+- Respond naturally and realistically to questions about your symptoms
+- Show measured and appropriate emotions - avoid excessive worry or dramatic complaints
+- Express mild concern when warranted, but remain relatively calm and cooperative
+- Use lay terminology, not medical jargon (unless your character background suggests medical knowledge)
+- Be consistent with the clinical findings provided
+- Ask clarifying questions when confused about medical terms
+- Mention how symptoms affect your daily life in a factual, non-dramatic way
+
+RESPONSE STYLE:
+- Use first person ("I feel...", "My stomach...", etc.)
+- Be honest about pain levels, discomfort, and symptom duration
+- Keep responses measured - avoid excessive complaining or worry
+- Focus on describing symptoms rather than expressing anxiety about them
+
+When given clinical examination findings, interpret them from a patient's perspective and respond as this patient would.
+
+PATIENT CONDITION
+Digestive :
+- Intestinal sounds
+- Transit
+
+Nephrological and urinary :
+- Diuresis
+- Edema`);
+  const [initialMessage, setInitialMessage] = useState("Hi, What brings you here today?");
   const inputRef = useRef<HTMLInputElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
+
+  // Load Vapi widget script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/@vapi-ai/client-sdk-react/dist/embed/widget.umd.js';
+    script.async = true;
+    script.type = 'text/javascript';
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup script on unmount
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
 
   // Don't fetch initial AI message automatically - wait for user to start
   useEffect(() => {
@@ -394,6 +446,27 @@ function App() {
           Send
         </button>
       </form>
+      
+      {/* Vapi Widget */}
+      <vapi-widget 
+        mode="voice"
+        theme="dark"
+        base-color="#000000"
+        accent-color="#14B8A6"
+        button-base-color="#000000"
+        button-accent-color="#ffffff"
+        radius="large"
+        size="full"
+        position="bottom-right"
+        main-label="TALK WITH AI"
+        start-button-text="Start"
+        end-button-text="End Call"
+        require-consent="true"
+        local-storage-key="vapi_widget_consent"
+        show-transcript="true"
+        public-key="713cd20c-b5f0-4bdc-82c0-04e97bbd7df9"
+        assistant-id="4c551107-dfef-4a67-8f77-13bd310eb732"
+      />
     </div>
   );
 }
