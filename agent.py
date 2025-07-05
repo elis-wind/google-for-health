@@ -1,3 +1,4 @@
+import os
 import json
 from cmath import phase
 from dotenv import load_dotenv
@@ -105,7 +106,7 @@ def generate_report(state: SessionState) -> dict:
     """
     Generates a final report summarizing the session using the interaction history.
     """
-    prompt = "Generate a final session report including the initial checklist and the summary of student's reasoning, with strengths and weaknesses"
+    prompt = "Generate a final session report in plain text including the initial checklist and the summary of student's reasoning. You should highllight student's strengths and weaknesses."
     msg = json.dumps([m.content for m in state["history"]], indent=2) + prompt
     # Call Gemini
     # response = call_gemini(prompt=msg)
@@ -119,7 +120,7 @@ def generate_virtual_patient_persona(state: SessionState) -> dict:
     """
     Generates a virtual patient case based on the student's weaknesses using the conversation history.
     """
-    prompt = "Generate a virtual patient persona similar to the student's checklist. This persona should target student's weaknesses in medical reasoning"
+    prompt = "Generate a virtual patient persona that should target student's weaknesses in medical reasoning. You should base the persona creation on student's initial checklsit, student's errors in medical reasoning from the report and conversation history. Your output should be a valid JSON"
     msg = json.dumps([m.content for m in state["history"]], indent=2) + prompt
     # Call Gemini
     # response = call_gemini(prompt=msg)
@@ -128,6 +129,18 @@ def generate_virtual_patient_persona(state: SessionState) -> dict:
     return {
         "virtual_patient": response
     }
+
+def generate_and_store_report_and_patient(state):
+    report = generate_report(state)["report"]
+    virtual_patient = generate_virtual_patient_persona(state)["virtual_patient"]
+
+    os.makedirs("data/reports", exist_ok=True)
+    with open("data/reports/report_reel.txt", "w") as f:
+        f.write(report)
+
+    os.makedirs("data/checklists", exist_ok=True)
+    with open("data/checklists/checklist_virtuel.txt", "w") as f:
+        f.write(virtual_patient)
 
 builder.add_node("report", generate_report)
 builder.add_node("virtual_patient", generate_virtual_patient_persona)
@@ -197,6 +210,7 @@ def step_agent(state: SessionState, user_message: Optional[str] = None, system_p
         state["report"] = ""
     if "virtual_patient" not in state:
         state["virtual_patient"] = ""
+
     return {"state": state, "ai_message": tutor_msg}
 
 if __name__ == "__main__":

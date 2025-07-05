@@ -1,8 +1,10 @@
 from fastapi import FastAPI
+from fastapi import BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Any, Dict
 from agent import step_agent
+from agent import generate_and_store_report_and_patient
 import uvicorn
 import logging
 
@@ -36,7 +38,7 @@ def read_root():
     return {"message": "API is running"}
 
 @app.post("/chat", response_model=ChatResponse)
-async def chat_endpoint(chat_request: ChatRequest):
+async def chat_endpoint(chat_request: ChatRequest, background_tasks: BackgroundTasks):
     logger.info("=== CHAT REQUEST ===")
     logger.info(f"Message: {chat_request.message}")
     logger.info(f"System Prompt: {chat_request.system_prompt}")
@@ -47,6 +49,9 @@ async def chat_endpoint(chat_request: ChatRequest):
     logger.info("=== CHAT RESPONSE ===")
     logger.info(f"AI Message: {result['ai_message']}")
     logger.info(f"Updated State: {result['state']}")
+
+    if result["state"].get("phase") == "outputs":
+        background_tasks.add_task(generate_and_store_report_and_patient, result["state"])
     
     return ChatResponse(ai_message=result["ai_message"], state=result["state"])
 
