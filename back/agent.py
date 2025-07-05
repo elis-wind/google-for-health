@@ -23,13 +23,12 @@ class SessionState(TypedDict):
 PHASE_PROMPTS = {
     "summary": """
     <|BEGINING_TUTORING_SESSION|>
-    Given the checklist, open the tutoring session by asking the student to summarize the findings on chronic dyspnea. Do not provide summary by yourself. Do not provide the diagnosis by yourself. Do not provide hints.
+    Given the checklist, open the tutoring session by asking the student to summarize the findings. Do not provide summary by yourself. Do not provide the diagnosis by yourself. Do not provide hints.
     Checklist: {checklist}
     """,
 
     "diff": """
-    You are guiding differential diagnosis. Ask student to provide you with 3-5 possible diagnosis 
-    and the reasoning behind them. Do not give the examples, do not provide diagnosis by yourself, do not provide student's response.
+    You are guiding diagnosis and differential diagnosis. Ask student to provide you with main diagnosis and with 3-5 possible alternative diagnosis and the reasoning behind them. Do not give the examples, do not provide diagnosis by yourself, do not provide student's response.
     Student reasoning so far: {last}
     """,
 
@@ -54,7 +53,7 @@ PHASE_PROMPTS = {
     """,
 
     "final_feedback": """
-    Reflect briefly on the session and student's answers (no more than 2-3 sentences). Then thank them and tell them a report and virtual patient will be created next. Give a brief overall feedback as a tutor .
+    Reflect briefly on the session and student's answers (no more than 2-3 sentences). If the student did not answer well or did not provide the answer, please highlight the weaknesses. Then thank them and tell them a report and virtual patient will be created next. Give a brief overall feedback as a tutor .
     Student reasoning so far: {last}
     """
 }
