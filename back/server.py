@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 from agent import step_agent
 from agent import generate_and_store_report_and_patient
 import uvicorn
@@ -31,10 +31,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class Message(BaseModel):
+    role: str
+    content: str
+
 class ChatRequest(BaseModel):
     message: str
     state: Dict[str, Any] = Field(default_factory=dict)
     system_prompt: str = Field(default="You are a helpful medical assistant.", description="Custom system prompt for the AI")
+    history: Optional[List[Message]] = Field(default=None, description="Conversation history")
 
 class ChatResponse(BaseModel):
     ai_message: str
@@ -70,17 +75,19 @@ async def simple_chat_endpoint(chat_request: ChatRequest):
     Simple chat endpoint that bypasses the complex agent workflow and just uses Gemini directly.
     Perfect for clean conversations with custom system prompts.
     """
-    from models.gemini import call_gemini
+    from models.gemini import call_gemini_with_history
     
     logger.info("=== SIMPLE CHAT REQUEST ===")
     logger.info(f"Message: {chat_request.message}")
     logger.info(f"System Prompt: {chat_request.system_prompt}")
     logger.info(f"State: {chat_request.state}")
+    logger.info(f"History: {chat_request.history}")
     
-    # Use Gemini directly with the custom system prompt
-    response = call_gemini(
+    # Use Gemini with conversation history
+    response = call_gemini_with_history(
         prompt=chat_request.message,
-        system_prompt=chat_request.system_prompt
+        system_prompt=chat_request.system_prompt,
+        history=chat_request.history or []
     )
     
     logger.info("=== SIMPLE CHAT RESPONSE ===")

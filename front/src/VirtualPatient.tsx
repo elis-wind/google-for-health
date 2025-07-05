@@ -94,7 +94,8 @@ Nephrological and urinary :
     e.preventDefault();
     if (!input.trim()) return;
     const userMsg = input.trim();
-    setMessages((msgs) => [...msgs, { role: "user", content: userMsg }]);
+    const updatedMessages = [...messages, { role: "user" as const, content: userMsg }];
+    setMessages(updatedMessages);
     setInput("");
     setLoading(true);
 
@@ -106,7 +107,8 @@ Nephrological and urinary :
         body: JSON.stringify({
           message: userMsg,
           state: sessionState,
-          system_prompt: systemPrompt
+          system_prompt: systemPrompt,
+          history: updatedMessages
         }),
       });
       const data = await res.json();
