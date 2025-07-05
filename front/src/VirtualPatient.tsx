@@ -209,6 +209,23 @@ Nephrological and urinary :
           >
             Go to Virtual Tutor
           </Link>
+          <Link to="/report" style={{
+            padding: "8px 16px",
+            borderRadius: 6,
+            border: "1px solid #444",
+            background: "transparent",
+            color: "#fff",
+            fontSize: 14,
+            textDecoration: "none",
+            display: "inline-flex",
+            alignItems: "center",
+            height: "36px"
+          }}
+            onMouseOver={e => (e.currentTarget.style.background = "#444")}
+            onMouseOut={e => (e.currentTarget.style.background = "transparent")}
+          >
+            Go to Report
+          </Link>
         </div>
       </div>
 

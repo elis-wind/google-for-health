@@ -22,7 +22,8 @@ class SessionState(TypedDict):
 
 PHASE_PROMPTS = {
     "summary": """
-    You are a clinical tutor.\nGiven the checklist, ask the student to summarize the findings. Do not provide summary by yourself\n
+    <|BEGINING_TUTORING_SESSION|>
+    Given the checklist, open the tutoring session by asking the student to summarize the findings on chronic dyspnea. Do not provide summary by yourself. Do not provide the diagnosis by yourself. Do not provide hints.
     Checklist: {checklist}
     """,
 
@@ -106,7 +107,8 @@ def generate_report(state: SessionState) -> dict:
     """
     Generates a final report summarizing the session using the interaction history.
     """
-    prompt = "Generate a final session report in plain text. Include the initial checklist and a summary of the student’s reasoning. Clearly highlight the student’s strengths and weaknesses in clinical thinking. Avoid repetition and keep the tone professional and constructive"
+    prompt = """Generate a final session report in plain text. Include the initial checklist and a summary of the student’s reasoning. Clearly highlight the student’s strengths and weaknesses in clinical thinking. Avoid repetition and keep the tone professional and constructive.
+    """
     msg = json.dumps([m.content for m in state["history"]], indent=2) + prompt
     # Call Gemini
     # response = call_gemini(prompt=msg)
@@ -147,11 +149,12 @@ builder.add_node("virtual_patient", generate_virtual_patient_persona)
 
 builder.add_edge(START, "summary")
 builder.add_edge("summary", "diff")
-builder.add_edge("diff", "lead")
-builder.add_edge("lead", "alts")
-builder.add_edge("alts", "errors")
-builder.add_edge("errors", "plan")
-builder.add_edge("plan", "final_feedback")
+# builder.add_edge("diff", "lead")
+# builder.add_edge("lead", "alts")
+# builder.add_edge("alts", "errors")
+# builder.add_edge("errors", "plan")
+# builder.add_edge("plan", "final_feedback")
+builder.add_edge("diff", "final_feedback")
 builder.add_edge("final_feedback", "report")
 builder.add_edge("report", "virtual_patient")
 builder.add_edge("virtual_patient", END)
@@ -182,7 +185,7 @@ def step_agent(state: SessionState, user_message: Optional[str] = None, system_p
     # Ensure history is a list of message objects
     state["history"] = _ensure_message_objects(state.get("history", []))
     # Allowed phases
-    phase_order = ["summary", "diff", "lead", "alts", "errors", "plan", "final_feedback", "outputs"]
+    phase_order = ["summary", "diff", "final_feedback", "outputs"]
     # Determine current phase
     phase = state["phase"]
     # Prepare prompt for the current phase

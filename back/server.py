@@ -1,5 +1,9 @@
+import os
+import fitz
 from fastapi import FastAPI
 from fastapi import BackgroundTasks
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Any, Dict
@@ -7,6 +11,10 @@ from agent import step_agent
 from agent import generate_and_store_report_and_patient
 import uvicorn
 import logging
+from io import BytesIO
+from fastapi import HTTPException
+
+from prompts.system_tutor import SYTEM_TUTOR_PROMPT
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -39,6 +47,7 @@ def read_root():
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(chat_request: ChatRequest, background_tasks: BackgroundTasks):
+    #chat_request.system_prompt = SYTEM_TUTOR_PROMPT
     logger.info("=== CHAT REQUEST ===")
     logger.info(f"Message: {chat_request.message}")
     logger.info(f"System Prompt: {chat_request.system_prompt}")
@@ -107,6 +116,34 @@ async def test_custom_system_prompt(chat_request: ChatRequest):
     return ChatResponse(
         ai_message=response, 
         state=chat_request.state
+    )
+
+@app.get("/handouts/dyspnee-image")
+def get_dyspnee_image():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    pdf_path = os.path.abspath(os.path.join(base_dir, "..", "data", "handouts", "ITEM-R2C_DYSPNEE_AIGUE_ET_CHRONIQUE.pdf"))
+    doc = fitz.open(pdf_path)
+    page = doc.load_page(0)
+    pix = page.get_pixmap(dpi=150)
+    img_bytes = BytesIO(pix.tobytes("jpeg"))
+    return StreamingResponse(img_bytes, media_type="image/jpeg")
+
+@app.get("/handouts/dyspnee")
+def get_dyspnee_pdf():
+    """Serve the PDF file directly"""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    pdf_path = os.path.abspath(os.path.join(base_dir, "..", "data", "handouts", "ITEM-R2C_DYSPNEE_AIGUE_ET_CHRONIQUE.pdf"))
+    
+    if not os.path.exists(pdf_path):
+        raise HTTPException(status_code=404, detail="PDF file not found")
+    
+    with open(pdf_path, "rb") as f:
+        pdf_content = f.read()
+    
+    return StreamingResponse(
+        BytesIO(pdf_content), 
+        media_type="application/pdf",
+        headers={"Content-Disposition": "inline; filename=ITEM-R2C_DYSPNEE_AIGUE_ET_CHRONIQUE.pdf"}
     )
 
 if __name__ == "__main__":
