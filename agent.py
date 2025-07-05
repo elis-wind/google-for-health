@@ -108,9 +108,9 @@ def generate_report(state: SessionState) -> dict:
     prompt = "Generate a final session report including the initial checklist and the summary of student's reasoning, with strengths and weaknesses"
     msg = json.dumps([m.content for m in state["history"]], indent=2) + prompt
     # Call Gemini
-    response = call_gemini(prompt=msg)
+    # response = call_gemini(prompt=msg)
     # Call MedGemma
-    # response = call_medgemma(prompt=msg)
+    response = call_medgemma(prompt=msg)
     return {
         "report": response
     }
@@ -122,9 +122,9 @@ def generate_virtual_patient_persona(state: SessionState) -> dict:
     prompt = "Generate a virtual patient persona similar to the student's checklist. This persona should target student's weaknesses in medical reasoning"
     msg = json.dumps([m.content for m in state["history"]], indent=2) + prompt
     # Call Gemini
-    response = call_gemini(prompt=msg)
+    # response = call_gemini(prompt=msg)
     # Call MedGemma
-    # response = call_medgemma(prompt=msg)
+    response = call_medgemma(prompt=msg)
     return {
         "virtual_patient": response
     }
