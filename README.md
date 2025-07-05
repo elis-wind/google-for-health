@@ -25,7 +25,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-- Create a .env file in the project root with
+- Create a .env file in the  with
 
 ```
 GOOGLE_CLOUD_PROJECT=your-project-id
@@ -37,7 +37,7 @@ MEDGEMMA_ENDPOINT_ID=your-medgemma-endpoint-id
 
 The API supports custom system prompts to customize the AI assistant's behavior for different medical specialties and use cases.
 
-### System promt for a virtual patient
+### System prompt for a virtual patient
 
 ```
 You are roleplaying as a patient for medical education purposes. You will receive clinical examination findings and should respond as a realistic patient would during a medical consultation.
@@ -73,18 +73,21 @@ Nephrological and urinary :
 ## Backend tests (models + agent)
 
 ```
+cd back
 python gemini.py
 ```
 
 or
 
 ```
+cd back
 python medgemma.py
 ```
 
 - Run agent
 
 ```
+cd back
 python agent.py
 ```
 
@@ -110,6 +113,7 @@ npm run dev
 - In one terminal, start the backend:
 
 ```
+cd back
 python server.py
 ```
 

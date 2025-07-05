@@ -61,7 +61,7 @@ async def simple_chat_endpoint(chat_request: ChatRequest):
     Simple chat endpoint that bypasses the complex agent workflow and just uses Gemini directly.
     Perfect for clean conversations with custom system prompts.
     """
-    from gemini import call_gemini
+    from models.gemini import call_gemini
     
     logger.info("=== SIMPLE CHAT REQUEST ===")
     logger.info(f"Message: {chat_request.message}")
@@ -88,7 +88,7 @@ async def test_custom_system_prompt(chat_request: ChatRequest):
     Test endpoint to demonstrate custom system prompt functionality.
     This endpoint bypasses the complex agent workflow and directly calls Gemini.
     """
-    from gemini import call_gemini
+    from models.gemini import call_gemini
     
     logger.info("=== TEST CHAT REQUEST ===")
     logger.info(f"Message: {chat_request.message}")

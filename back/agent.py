@@ -8,8 +8,8 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from langchain_core.messages import HumanMessage, AIMessage
 
-from gemini import call_gemini
-from medgemma import call_medgemma
+from models.gemini import call_gemini
+from models.medgemma import call_medgemma
 
 load_dotenv()
 
