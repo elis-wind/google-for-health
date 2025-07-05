@@ -48,7 +48,7 @@ function App() {
 
     try {
       // Use the simple chat endpoint for clean conversations
-      const res = await fetch("http://localhost:8000/chat", {
+      const res = await fetch("http://localhost:8000/chat/simple", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -105,7 +105,7 @@ function App() {
         }}
       >
         <h1 style={{ color: "#fff", fontSize: 18, fontWeight: 600, margin: 0 }}>
-          Virtual Tutor
+          Virtual Patient
         </h1>
         <div style={{ display: "flex", gap: 8 }}>
           <button
@@ -140,7 +140,7 @@ function App() {
           >
             Reset
           </button>
-          <Link to="/virtual-patient" style={{
+          <Link to="/" style={{
             padding: "8px 16px",
             borderRadius: 6,
             border: "1px solid #444",
@@ -155,7 +155,7 @@ function App() {
             onMouseOver={e => (e.currentTarget.style.background = "#444")}
             onMouseOut={e => (e.currentTarget.style.background = "transparent")}
           >
-            Go to Virtual Patient
+            Go to Virtual Tutor
           </Link>
         </div>
       </div>

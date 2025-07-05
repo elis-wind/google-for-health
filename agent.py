@@ -106,7 +106,7 @@ def generate_report(state: SessionState) -> dict:
     """
     Generates a final report summarizing the session using the interaction history.
     """
-    prompt = "Generate a final session report in plain text including the initial checklist and the summary of student's reasoning. You should highllight student's strengths and weaknesses."
+    prompt = "Generate a final session report in plain text. Include the initial checklist and a summary of the student’s reasoning. Clearly highlight the student’s strengths and weaknesses in clinical thinking. Avoid repetition and keep the tone professional and constructive"
     msg = json.dumps([m.content for m in state["history"]], indent=2) + prompt
     # Call Gemini
     # response = call_gemini(prompt=msg)
@@ -120,7 +120,7 @@ def generate_virtual_patient_persona(state: SessionState) -> dict:
     """
     Generates a virtual patient case based on the student's weaknesses using the conversation history.
     """
-    prompt = "Generate a virtual patient persona that should target student's weaknesses in medical reasoning. You should base the persona creation on student's initial checklsit, student's errors in medical reasoning from the report and conversation history. Your output should be a valid JSON"
+    prompt = "Generate a virtual patient persona in JSON format to help the student practice and improve their medical reasoning. Base the persona on the student's initial checklist, errors identified in the report, and the conversation history. Include only patient-relevant information that allows the student to ask diagnostic and clinical questions. Do not include any diagnoses, learning plans, or tutor comments"
     msg = json.dumps([m.content for m in state["history"]], indent=2) + prompt
     # Call Gemini
     # response = call_gemini(prompt=msg)
