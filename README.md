@@ -8,9 +8,9 @@ MedLearn is a project designed to enhance medical education by supporting physic
 
 Key Features:
 - ✅ Real patient interaction with structured checklists
-- 🧠 AI clinical reasoning tutor with human-in-the-loop oversight
+- 🧠 AI clinical reasoning Gemini tutor with human-in-the-loop oversight
 - 📊 Personalized feedback powered by MedGemma
-- 💻 Virtual patient simulations for safe, repeatable training
+- 💻 Virtual patient simulation by MedGemma for safe, repeatable training
 
 ## Google Cloud setup
 
