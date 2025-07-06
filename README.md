@@ -1,4 +1,16 @@
-# google-for-health
+<p align="left">
+  <img src="medlearn.png" alt="MedLearn" width="200"/>
+</p>
+
+*AI-Powered Training for Future Physicians*
+
+MedLearn is a project designed to enhance medical education by supporting physicians-in-training at the intersection of clinical care and learning. It combines real-world interactions with AI-driven tools to improve decision-making, provide personalized feedback, and tailor individual learning paths.
+
+Key Features:
+- ✅ Real patient interaction with structured checklists
+- 🧠 AI clinical reasoning tutor with human-in-the-loop oversight
+- 📊 Personalized feedback powered by MedGemma
+- 💻 Virtual patient simulations for safe, repeatable training
 
 ## Google Cloud setup
 
