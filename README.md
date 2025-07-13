@@ -12,6 +12,8 @@ Key Features:
 - 📊 Personalized feedback powered by MedGemma
 - 💻 Virtual patient simulation by MedGemma for safe, repeatable training
 
+**Contributors**: Adrien Ezerzer, Pierre Cornette, Maxime Song, Muhammad Zahab Khalid, Nathan Cassereau, Natalia Bobkova
+
 ## Google Cloud setup
 
 - Install the Google Cloud CLI:
